@@ -1,0 +1,17 @@
+[project]
+name = "crypto-scavenger-hunt"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "altair>=5.5.0",
+    "marimo>=0.16.0",
+]
+
+[dependency-groups]
+dev = [
+    "basedpyright>=1.31.4",
+    "prek>=0.2.1",
+    "ruff>=0.13.1",
+]
