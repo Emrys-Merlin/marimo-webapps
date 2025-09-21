@@ -7,11 +7,6 @@ repos:
     - id: check-yaml
     - id: check-added-large-files
 
-  - repo: https://github.com/DetachHead/basedpyright-pre-commit-mirror
-    rev: v1.13.0 # or whatever the latest version is at the time
-    hooks:
-        - id: basedpyright
-
   - repo: https://github.com/astral-sh/ruff-pre-commit
     # Ruff version.
     rev: v0.13.1
