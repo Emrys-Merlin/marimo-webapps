@@ -1,0 +1,117 @@
+import marimo
+
+__generated_with = "0.16.0"
+app = marimo.App(width="medium")
+
+with app.setup:
+    from math import ceil
+
+    import marimo as mo
+
+
+@app.cell
+def _():
+    CHIFFRE = "BIGZATFBIP OAHIFCVHPNFB. TBG BWRS DTI WHQOWRI OIAKINS HPD IHFB DIP BTPVITN WHQ DIP PWIFBNSIP KGS JIGDTIPS. DTI NSWSTKP TNS TU CIAAIG. JTIA NEWNN HPD IGQKAO!"
+
+    N_COLS = 2
+    return CHIFFRE, N_COLS
+
+
+@app.cell
+def _():
+    mo.md(
+        """
+    # Substitutions-Chiffre
+
+    Bitte entschlüsselt den folgenden Text:
+    """
+    )
+    return
+
+
+@app.cell
+def _(CHIFFRE, clear_text):
+    clear_text_area = mo.ui.text_area(
+        value=clear_text,
+        disabled=True,
+        full_width=True,
+        label="Klartext",
+    ).style(width="50%")
+    chiffre_text_area = mo.ui.text_area(
+        value=CHIFFRE,
+        disabled=True,
+        full_width=True,
+        label="Chiffre",
+    ).style(width="50%")
+
+    mo.hstack(
+        [chiffre_text_area, clear_text_area],
+        align="stretch",
+        justify="center",
+    )
+    return
+
+
+@app.cell
+def _():
+    _fields: dict[str, mo.ui.text] = {}
+
+    n_alphabet = 26
+
+    for _i in range(n_alphabet):
+        _c = chr(ord("A") + _i)
+        _fields[_c] = mo.ui.text(
+            max_length=1, label=f"{_c} =", value="E" if _c == "I" else ""
+        )
+
+    fields = mo.ui.dictionary(_fields)  # pyright: ignore[reportArgumentType]
+    return fields, n_alphabet
+
+
+@app.cell
+def _(N_COLS, fields, n_alphabet):
+    _switch = ceil(n_alphabet / N_COLS)
+    _cols = [list() for _ in range(N_COLS)]
+
+    for _i in range(n_alphabet):
+        _c = chr(ord("A") + _i)
+        col_idx = _i // _switch
+        _cols[col_idx].append(fields[_c])
+
+    mo.hstack(
+        [
+            mo.vstack(
+                col,
+                # justify="start",
+                align="end",
+            )
+            for col in _cols
+        ],
+        justify="start",
+        # align="end"
+    ).style(max_width="50%", overflow="auto")
+    return
+
+
+@app.cell
+def _(fields):
+    mapping = {
+        c: field.value.lower() if field.value != "" else "-"
+        for c, field in fields.items()
+    }
+    return (mapping,)
+
+
+@app.cell
+def _(CHIFFRE, mapping):
+    clear_text = "".join(mapping.get(c, c) for c in CHIFFRE).upper()
+    return (clear_text,)
+
+
+@app.cell
+def _():
+    return
+
+
+if __name__ == "__main__":
+    app.run()
