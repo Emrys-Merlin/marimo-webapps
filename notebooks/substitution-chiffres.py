@@ -4,17 +4,20 @@ __generated_with = "0.16.0"
 app = marimo.App(width="medium")
 
 with app.setup:
+    from collections import Counter
     from math import ceil
 
+    import altair as alt
     import marimo as mo
+    import polars as pl
 
 
 @app.cell
 def _():
     CHIFFRE = "BIGZATFBIP OAHIFCVHPNFB. TBG BWRS DTI WHQOWRI OIAKINS HPD IHFB DIP BTPVITN WHQ DIP PWIFBNSIP KGS JIGDTIPS. DTI NSWSTKP TNS TU CIAAIG. JTIA NEWNN HPD IGQKAO!"
-
     N_COLS = 2
-    return CHIFFRE, N_COLS
+    LINK = "https://de.wikipedia.org/wiki/Buchstabenh%C3%A4ufigkeit"
+    return CHIFFRE, LINK, N_COLS
 
 
 @app.cell
@@ -106,6 +109,82 @@ def _(fields):
 def _(CHIFFRE, mapping):
     clear_text = "".join(mapping.get(c, c) for c in CHIFFRE).upper()
     return (clear_text,)
+
+
+@app.cell
+def _(CHIFFRE, n_alphabet):
+    _counter = Counter(CHIFFRE)
+    _counts = [
+        {
+            "Buchstabe": chr(ord("A") + _i),
+            "Häufigkeit": _counter.get(chr(ord("A") + _i), 0),
+        }
+        for _i in range(n_alphabet)
+    ]
+
+    chiffre_count = pl.DataFrame(_counts)
+    return (chiffre_count,)
+
+
+@app.cell
+def _(chiffre_count):
+    _chart = (
+        alt.Chart(chiffre_count)
+        .mark_bar()
+        .encode(x="Buchstabe", y=alt.Y("Häufigkeit", title="Häufigkeit (absolut)"))
+        .properties(title="Buchstabenhäufigkeit in der Chiffre")
+    )
+
+    chiffre_plot = mo.ui.altair_chart(_chart)
+    return (chiffre_plot,)
+
+
+@app.cell
+def _():
+    _dir = mo.notebook_location()
+    assert _dir is not None
+    frequency_fn = _dir / "public/frequency_german.parquet"
+    return (frequency_fn,)
+
+
+@app.cell
+def _(frequency_fn):
+    df = pl.read_parquet(frequency_fn)
+    return (df,)
+
+
+@app.cell
+def _(df):
+    _chart = (
+        alt.Chart(df)
+        .mark_bar()
+        .encode(x="Buchstabe", y=alt.Y("Häufigkeit", title="Häufigkeit [%]"))
+        .properties(title="Buchstabenhäufigkeit in deutschen Texten")
+    )
+
+    frequency_plot = mo.ui.altair_chart(_chart)
+    return (frequency_plot,)
+
+
+@app.cell
+def _(LINK, frequency_plot):
+    frequency_compose = mo.md(f"""\
+    {frequency_plot}
+    Quelle: [{LINK}]({LINK})
+    """)
+    return (frequency_compose,)
+
+
+@app.cell
+def _(chiffre_plot, frequency_compose):
+    mo.accordion(
+        {
+            "Buchstabenhäufigkeit in der Chiffre": chiffre_plot,
+            "Buchstabenhäufigkeit in deutschen Texten": frequency_compose,
+        },
+        multiple=True,
+    )
+    return
 
 
 @app.cell
