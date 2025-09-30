@@ -9,7 +9,7 @@ serve:
 
 .PHONY: install-uv
 install-uv:
-	@command -v uv >/dev/null 2>&1 || curl -LsSf https://astral.sh/uv/install.sh | sh
+	@command -v uv >/dev/null 2>&1 && echo "uv already installed" || curl -LsSf https://astral.sh/uv/install.sh | sh
 
 
 .PHONY: build-cloudflare
