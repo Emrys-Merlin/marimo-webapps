@@ -16,3 +16,6 @@ dependencies = [
 
 [tool.basedpyright]
 typeCheckingMode = "basic"
+
+[tool.marimo.display]
+custom_css = ["styles.css"]
