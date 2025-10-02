@@ -54,12 +54,15 @@ def pow_mod(base: int, exp: int, mod: int) -> int:
 
 @app.cell
 def _(C, E, N):
-    n_input = mo.ui.text(value=str(N), label="n = ")
+    n_input = mo.ui.text(value=str(N), label="N = ")
     e_input = mo.ui.text(value=str(E), label="e = ")
     c_input = mo.ui.text(value=str(C), label="c = ")
 
-    button = mo.ui.run_button(label="Run")
-    return button, c_input, e_input, n_input
+    button = mo.ui.button(label="Weiter", value=False, on_click=lambda value: True)
+    phi_button = mo.ui.button(label="Weiter", value=False, on_click=lambda value: True)
+    d_button = mo.ui.button(label="Weiter", value=False, on_click=lambda value: True)
+    c_button = mo.ui.button(label="Weiter", value=False, on_click=lambda value: True)
+    return button, c_button, c_input, d_button, e_input, n_input, phi_button
 
 
 @app.cell
@@ -82,14 +85,17 @@ def _(C, E, N, c_input, e_input, n_input):
 
 
 @app.cell
-def _(button, c_input, e_input, n_input):
+def _(button, e_input, n_input):
     mo.md(
         f"""
     # RSA knacken
 
+    Diese Website führt euch Schritt für Schritt durch den Prozess die RSA-Verschlüsselung zu knacken.
+
+    Zunächst benötigen wir die öffentlichen Parameter der Verschlüsselung. Das sind $N$ und $e$.
+
     {n_input}</br>
     {e_input}</br>
-    {c_input}</br>
     {button}
     """
     )
@@ -117,39 +123,52 @@ def _(button, n):
 
 
 @app.cell
-def _(n, p, q):
+def _(p, phi_button, q):
     mo.md(
         f"""
-    ## Prime factors
+    ## Berechnet die Primfaktorzerlegung von $N$
 
-    The two prime factors of n = {n} are
+    Der erste Schritt und auch der einzige Schritt, der einen Quantencomputer benötigt, ist die Primfaktorzerlegung von $N$. Für unser Beispiel haben wir ein $N$ gewählt, das noch klein genug ist, dass auch ein klassischer Algorithmus die Primfaktoren finden kann. Diese sind:
 
     p = {p}</br>
     q = {q}
+
+    {phi_button}
     """
     )
     return
 
 
 @app.cell
-def _(p, q):
+def _(p, phi_button, q):
+    mo.stop(not phi_button.value)
+
     phi = (p - 1) * (q - 1)
     return (phi,)
 
 
 @app.cell
-def _(phi):
+def _(d_button, phi):
     mo.md(
         rf"""
-    # Phi function
+    ## Berechnet die Phi-Funktion von $N$: $\varphi(N)$
+
+    Die [Euler’sche Phi-Funktion](https://de.wikipedia.org/wiki/Eulersche_Phi-Funktion) zählt wie viele der Zahlen zwischen 1 und N teilerfremd zu N sind. Das ist wichtig für uns, weil $e$ teilerfremd zu N sein muss und unser privater Schlüssel $d$ auch. Diese Zahlen haben besondere Eigenscaften, die sich der RSA-Algorithmus zu Nutze macht. $\varphi(N)$ wird uns helfen aus $e$ den Schlüssel $d$ zu berechnen.
+
+    Die Formel für $\varphi(N)$ ist Dank unserer Primfaktorzerlegung von $N$ ganz einfach zu berechnen:
+
     $\varphi(N) = (p - 1) \cdot (q - 1) = {phi}$
+
+    {d_button}
     """
     )
     return
 
 
 @app.cell
-def _(e, phi):
+def _(d_button, e, phi):
+    mo.stop(not d_button.value)
+
     gcd, _d, _ = extended_euclidean(e, phi)
 
     assert gcd == 1
@@ -163,23 +182,41 @@ def _(e, phi):
 
 
 @app.cell
-def _():
-    mo.md(
-        r"""
-    # Compute the secret key $d$
-    The formula is
+def _(d):
+    _text = r"""
+    ## Berechnet den geheimen Schlüssel (private key) $d$
+
+    Symbolisch ist die Formel für $d$ gegeben durch
 
     $$
-    d = e^{-1} \operatorname{mod} \varphi(n)
+    d = e^{{-1}} \operatorname{{mod}} \varphi(n).
     $$
-    """
-    )
+
+    Wenn man $d$ tatsächlich berechnen möchte, benutzt man dafür den [erweiterten euklidischen Algorithmus](https://de.wikipedia.org/wiki/Erweiterter_euklidischer_Algorithmus). Damit ergibt sich
+
+    $$
+    d = {d}
+    $$
+    """.format(d=d)
+    mo.md(_text)
     return
 
 
 @app.cell
-def _(d):
-    mo.md(rf"""This leads to $d={d}$.""")
+def _(c_button, c_input, d_button):
+    mo.stop(not d_button.value and not c_button.value)
+
+    mo.md(
+        rf"""
+    ## Entschlüsseln der geheimen Nachricht $c$
+
+    Dazu benötigen wir zunächst die Nachricht:
+
+    {c_input}
+
+    {c_button}
+    """
+    )
     return
 
 
@@ -190,22 +227,24 @@ def _(c, d, n):
 
 
 @app.cell
-def _():
-    mo.md(
-        r"""
-    # Decode the cypher $c$ to get the clear text message $m$
+def _(c_button, m):
+    mo.stop(not c_button.value)
+
+    _text = r"""
+    Die Klartext-Nachricht erhalten wir durch potenzieren mit dem geheimen Schlüssel $d$ und Rest-Rechnung mit dem öffentlichen Parameter $N$. Als Formel schreibt sich das als:
 
     $$
-    m = c^d \operatorname{mod} N
+    m = c^d \operatorname{{mod}} N
     $$
-    """
-    )
-    return
 
+    In der Anwendung lässt sich diese Operation mit dem [binären Exponentations-Algorithmus](https://de.wikipedia.org/wiki/Bin%C3%A4re_Exponentiation#Bin%C3%A4re_Modulo-Exponentiation) (auch Square-and-Multiply genannt) durchführen und man erhält:
 
-@app.cell
-def _(m):
-    mo.md(f"""This computes to $m = {m}$.""")
+    $$
+    m = {m}
+    $$
+    """.format(m=m)
+
+    mo.md(_text)
     return
 
 

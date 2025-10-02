@@ -12,6 +12,8 @@ dependencies = [
     "ruff>=0.13.1",
     "typer>=0.19.2",
     "loguru>=0.7.3",
+    "i18nice[yaml]>=0.16.0",
+    "pandas>=2.3.3",
 ]
 
 [tool.basedpyright]

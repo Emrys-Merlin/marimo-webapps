@@ -27,6 +27,19 @@ def _():
 
 
 @app.cell
+def _():
+    exchange_button = mo.ui.button(
+        label="Austauschnachricht berechnen", value=False, on_click=lambda value: True
+    )
+    secret_button = mo.ui.button(
+        label="Gemeinsames Geheimnis berechnen",
+        value=False,
+        on_click=lambda value: True,
+    )
+    return exchange_button, secret_button
+
+
+@app.cell
 def _(g_field, lang_switch, p_field):
     mo.md(
         f"""
@@ -63,13 +76,15 @@ def _(SECRET):
 
 
 @app.cell
-def _(secret_field):
+def _(exchange_button, secret_field):
     mo.md(
         f"""
     ## Geheimnis
     {secret_field}
 
-    Das Geheimnis wird euch an der Station mitgeteilt
+    Das Geheimnis wird euch an der Station mitgeteilt.
+
+    {exchange_button}
     """
     )
     return
@@ -82,23 +97,32 @@ def _(g, p, secret):
 
 
 @app.cell
-def _(message):
-    mo.md(
-        f"""
-    ## Nachricht für Partner
-
-    Die Nachricht für euren Partner lautet: **{message}**. Diese Nachricht kann über den unsicheren Kanal an euren Partner weitergegeben werden.
-    """
-    )
-    return
-
-
-@app.cell
 def _(RECEIVED_MESSAGE):
     received_message_field = mo.ui.text(
         value=str(RECEIVED_MESSAGE), label="Empfangene Nachricht = "
     )
     return (received_message_field,)
+
+
+@app.cell
+def _(exchange_button, message, received_message_field, secret_button):
+    mo.stop(not exchange_button.value and not secret_button.value)
+
+    mo.md(
+        f"""
+    ## Nachricht für Partner
+
+    Die Nachricht für euren Partner lautet: **{message}**. Diese Nachricht kann über den unsicheren Kanal an euren Partner weitergegeben werden.
+
+    ## Geteiltes Geheimnis
+    Bitte tragt hier die Nachricht ein, die ihr von eurem Partner erhalten habt:
+
+    {received_message_field}
+
+    {secret_button}
+    """
+    )
+    return
 
 
 @app.cell
@@ -108,16 +132,11 @@ def _(p, received_message, secret):
 
 
 @app.cell
-def _(received_message_field, shared_secret):
+def _(secret_button, shared_secret):
+    mo.stop(not secret_button.value)
+
     mo.md(
-        f"""
-    ## Geteiltes Geheimnis
-    Bitte tragt hier die Nachricht ein, die ihr von eurem Partner erhalten habt:
-
-    {received_message_field}
-
-    Euer geteiltes Geheimnis ist damit: **{shared_secret}**. Dieses geteilte Geheimnis kann nun als Schlüssel für weitere kryptographische Verfahren verwendet werden.
-    """
+        f"""Euer geteiltes Geheimnis ist damit: **{shared_secret}**. Dieses geteilte Geheimnis kann nun als Schlüssel für weitere kryptographische Verfahren verwendet werden."""
     )
     return
 

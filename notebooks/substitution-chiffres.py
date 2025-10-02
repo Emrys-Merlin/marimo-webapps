@@ -9,7 +9,7 @@ with app.setup:
 
     import altair as alt
     import marimo as mo
-    import polars as pl
+    import pandas as pd
 
 
 @app.cell
@@ -122,7 +122,7 @@ def _(CHIFFRE, n_alphabet):
         for _i in range(n_alphabet)
     ]
 
-    chiffre_count = pl.DataFrame(_counts)
+    chiffre_count = pd.DataFrame(_counts)
     return (chiffre_count,)
 
 
@@ -143,13 +143,13 @@ def _(chiffre_count):
 def _():
     _dir = mo.notebook_location()
     assert _dir is not None
-    frequency_fn = _dir / "public/frequency_german.parquet"
+    frequency_fn = _dir / "public/frequency_german.csv"
     return (frequency_fn,)
 
 
 @app.cell
 def _(frequency_fn):
-    df = pl.read_parquet(frequency_fn)
+    df = pd.read_csv(frequency_fn)
     return (df,)
 
 
@@ -170,9 +170,15 @@ def _(df):
 def _(LINK, frequency_plot):
     frequency_compose = mo.md(f"""\
     {frequency_plot}
-    Quelle: [{LINK}]({LINK})
+    Quelle: [Wikipedia]({LINK})
     """)
     return (frequency_compose,)
+
+
+@app.cell
+def _():
+    mo.md("Macht euch dazu gerne die folgenden Informationen zu Nutze:")
+    return
 
 
 @app.cell
