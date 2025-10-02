@@ -18,18 +18,20 @@ def _():
 
 @app.cell
 def _():
-    lang_switch = mo.ui.dropdown(
-        label="Language",
-        options={"Deutsch/German": "de", "English": "en"},
-        value="Deutsch/German",
-    )
-    return (lang_switch,)
+    # lang_switch = mo.ui.dropdown(
+    #     label="Language",
+    #     options={"Deutsch/German": "de", "English": "en"},
+    #     value="Deutsch/German",
+    # )
+    return
 
 
 @app.cell
 def _():
     exchange_button = mo.ui.button(
-        label="Austauschnachricht berechnen", value=False, on_click=lambda value: True
+        label="Austauschnachricht berechnen",
+        value=False,
+        on_click=lambda value: True,
     )
     secret_button = mo.ui.button(
         label="Gemeinsames Geheimnis berechnen",
@@ -40,11 +42,10 @@ def _():
 
 
 @app.cell
-def _(g_field, lang_switch, p_field):
+def _(g_field, p_field):
     mo.md(
         f"""
     # Diffie-Hellman Schlüsselaustausch
-    {lang_switch}
 
     Diese App soll euch bei den Berechnungen zum Austausch eines Schlüssels nach Diffie-Hellman unterstützen. Tragt einfach die jeweiligen Werte in die Textfelder ein. Die App berechnet dann die Nachricht für euren Partner und das gemeinsame Geheimnis für euch.
 
