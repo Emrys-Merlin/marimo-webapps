@@ -1,0 +1,13 @@
+en:
+  title: "# Substitution Cipher\n\nPlease decrypt the following text:"
+  cipher: "FYIWQBVPNBVMYIJ. GYP JYNCTU VRT VBJH BIU TBQITU B RMIV BSYPV VRT ITLV NYFBVMYI. VRT JVBVMYI MJ MI \"ONTBJT MIJTQV\". RBCT DPI BIU TIKYG!"
+  link: "https://en.wikipedia.org/wiki/Letter_frequency"
+  frequency_fn: "frequency_english.csv"
+  additional_infos: "Feel free to use the following information to help you:"
+  count_plot_intro: "Letter frequency in the cipher"
+  frequency_plot_intro: "Letter frequency in English texts"
+  letter_col: "Letter"
+  frequency_col: "Frequency"
+  frequency_plot_title: "Letter frequency in English texts"
+  count_plot_title: "Letter frequency in the cipher"
+  source: Source

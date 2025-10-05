@@ -1,0 +1,13 @@
+de:
+  title: "# Substitutions-Chiffre\n\nBitte entschlüsselt den folgenden Text:"
+  cipher: "EKGFMICEKR UMOKCNSORVCE. IEG EAQX JIK AOWUAQK UKMPKVX ORJ KOCE JKR EIRSKIV AOW JKR RAKCEVXKR PGX ZKGJIKRX. JIK VXAXIPR IVX IT \"QIXXK KIRWOKUKR\". ZIKM VDAVV ORJ KGWPMU!"
+  link: "https://de.wikipedia.org/wiki/Buchstabenh%C3%A4ufigkeit"
+  frequency_fn: "frequency_german.csv"
+  additional_infos: "Macht euch dazu gerne die folgenden Informationen zu Nutze:"
+  count_plot_intro: "Buchstabenhäufigkeit in der Chiffre"
+  frequency_plot_intro: "Buchstabenhäufigkeit in deutschen Texten"
+  letter_col: "Buchstabe"
+  frequency_col: "Häufigkeit"
+  frequency_plot_title: "Buchstabenhäufigkeit in deutschen Texten"
+  count_plot_title: "Buchstabenhäufigkeit in der Chiffre"
+  source: Quelle

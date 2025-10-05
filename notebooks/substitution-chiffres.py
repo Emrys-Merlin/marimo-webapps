@@ -10,25 +10,58 @@ with app.setup:
     import altair as alt
     import marimo as mo
     import pandas as pd
+    import i18n
 
 
 @app.cell
 def _():
-    CHIFFRE = "BIGZATFBIP OAHIFCVHPNFB. TBG BWRS DTI WHQOWRI OIAKINS HPD IHFB DIP BTPVITN WHQ DIP PWIFBNSIP KGS JIGDTIPS. DTI NSWSTKP TNS TU CIAAIG. JTIA NEWNN HPD IGQKAO!"
-    N_COLS = 2
-    LINK = "https://de.wikipedia.org/wiki/Buchstabenh%C3%A4ufigkeit"
-    return CHIFFRE, LINK, N_COLS
-
-
-@app.cell
-def _():
-    mo.md(
-        """
-    # Substitutions-Chiffre
-
-    Bitte entschlüsselt den folgenden Text:
-    """
+    lang_selector = mo.ui.dropdown(
+        options={
+            "Deutsch/German": "de",
+            "English": "en",
+        },
+        value="Deutsch/German",
     )
+    return (lang_selector,)
+
+
+@app.cell
+def _(lang_selector):
+    lang_selector
+    return
+
+
+@app.cell
+def _():
+    _dir = mo.notebook_location()
+    assert _dir is not None
+    public_dir = _dir / "public"
+    return (public_dir,)
+
+
+@app.cell
+def _(lang_selector, public_dir):
+    i18n.load_path.append(public_dir)
+    i18n.set("locale", lang_selector.value)
+    i18n.set("fallback", "de")
+    return
+
+
+@app.cell
+def _(lang_selector):
+    _ = lang_selector.value
+    CHIFFRE = i18n.t("substitution_cipher.cipher")
+    LINK = i18n.t("substitution_cipher.link")
+    LETTER_COL = i18n.t("substitution_cipher.letter_col")
+    FREQUENCY_COL = i18n.t("substitution_cipher.frequency_col")
+    N_COLS = 2
+    return CHIFFRE, FREQUENCY_COL, LETTER_COL, LINK, N_COLS
+
+
+@app.cell
+def _(lang_selector):
+    _ = lang_selector.value
+    mo.md(i18n.t("substitution_cipher.title"))
     return
 
 
@@ -42,7 +75,7 @@ def _(CHIFFRE, clear_text):
     ).style(width="50%")
     chiffre_text_area = mo.ui.text_area(
         value=CHIFFRE,
-        disabled=True,
+        disabled=False,
         full_width=True,
         label="Chiffre",
     ).style(width="50%")
@@ -57,18 +90,22 @@ def _(CHIFFRE, clear_text):
 
 @app.cell
 def _():
-    _fields: dict[str, mo.ui.text] = {}
-
     n_alphabet = 26
+    return (n_alphabet,)
+
+
+@app.cell
+def _(e_subst, n_alphabet):
+    _fields: dict[str, mo.ui.text] = {}
 
     for _i in range(n_alphabet):
         _c = chr(ord("A") + _i)
         _fields[_c] = mo.ui.text(
-            max_length=1, label=f"{_c} =", value="E" if _c == "I" else ""
+            max_length=1, label=f"{_c} =", value="E" if _c == e_subst else ""
         )
 
     fields = mo.ui.dictionary(_fields)  # pyright: ignore[reportArgumentType]
-    return fields, n_alphabet
+    return (fields,)
 
 
 @app.cell
@@ -92,7 +129,7 @@ def _(N_COLS, fields, n_alphabet):
         ],
         justify="start",
         # align="end"
-    ).style(max_width="50%", overflow="auto")
+    ).style(max_width="60%", overflow="auto")
     return
 
 
@@ -112,12 +149,12 @@ def _(CHIFFRE, mapping):
 
 
 @app.cell
-def _(CHIFFRE, n_alphabet):
+def _(CHIFFRE, FREQUENCY_COL, LETTER_COL, n_alphabet):
     _counter = Counter(CHIFFRE)
     _counts = [
         {
-            "Buchstabe": chr(ord("A") + _i),
-            "Häufigkeit": _counter.get(chr(ord("A") + _i), 0),
+            LETTER_COL: chr(ord("A") + _i),
+            FREQUENCY_COL: _counter.get(chr(ord("A") + _i), 0),
         }
         for _i in range(n_alphabet)
     ]
@@ -127,12 +164,22 @@ def _(CHIFFRE, n_alphabet):
 
 
 @app.cell
-def _(chiffre_count):
+def _(FREQUENCY_COL, LETTER_COL, chiffre_count):
+    _idx = chiffre_count[FREQUENCY_COL].idxmax()
+    e_subst = chiffre_count.loc[_idx, LETTER_COL]
+    return (e_subst,)
+
+
+@app.cell
+def _(FREQUENCY_COL, LETTER_COL, chiffre_count):
     _chart = (
         alt.Chart(chiffre_count)
         .mark_bar()
-        .encode(x="Buchstabe", y=alt.Y("Häufigkeit", title="Häufigkeit (absolut)"))
-        .properties(title="Buchstabenhäufigkeit in der Chiffre")
+        .encode(
+            x=LETTER_COL,
+            y=alt.Y(FREQUENCY_COL, title=f"{FREQUENCY_COL} (absolut)"),
+        )
+        .properties(title=i18n.t("substitution_cipher.count_plot_title"))
     )
 
     chiffre_plot = mo.ui.altair_chart(_chart)
@@ -140,10 +187,9 @@ def _(chiffre_count):
 
 
 @app.cell
-def _():
-    _dir = mo.notebook_location()
-    assert _dir is not None
-    frequency_fn = _dir / "public/frequency_german.csv"
+def _(lang_selector, public_dir):
+    _ = lang_selector.value
+    frequency_fn = public_dir / i18n.t("substitution_cipher.frequency_fn")
     return (frequency_fn,)
 
 
@@ -154,12 +200,12 @@ def _(frequency_fn):
 
 
 @app.cell
-def _(df):
+def _(FREQUENCY_COL, LETTER_COL, df):
     _chart = (
         alt.Chart(df)
         .mark_bar()
-        .encode(x="Buchstabe", y=alt.Y("Häufigkeit", title="Häufigkeit [%]"))
-        .properties(title="Buchstabenhäufigkeit in deutschen Texten")
+        .encode(x=LETTER_COL, y=alt.Y(FREQUENCY_COL, title=f"{FREQUENCY_COL} [%]"))
+        .properties(title=i18n.t("substitution_cipher.frequency_plot_title"))
     )
 
     frequency_plot = mo.ui.altair_chart(_chart)
@@ -168,16 +214,18 @@ def _(df):
 
 @app.cell
 def _(LINK, frequency_plot):
+    _source = i18n.t("substitution_cipher.source")
     frequency_compose = mo.md(f"""\
     {frequency_plot}
-    Quelle: [Wikipedia]({LINK})
+    {_source}: [Wikipedia]({LINK})
     """)
     return (frequency_compose,)
 
 
 @app.cell
-def _():
-    mo.md("Macht euch dazu gerne die folgenden Informationen zu Nutze:")
+def _(lang_selector):
+    _ = lang_selector.value
+    mo.md(i18n.t("substitution_cipher.additional_infos"))
     return
 
 
@@ -185,8 +233,8 @@ def _():
 def _(chiffre_plot, frequency_compose):
     mo.accordion(
         {
-            "Buchstabenhäufigkeit in der Chiffre": chiffre_plot,
-            "Buchstabenhäufigkeit in deutschen Texten": frequency_compose,
+            i18n.t("substitution_cipher.count_plot_intro"): chiffre_plot,
+            i18n.t("substitution_cipher.frequency_plot_intro"): frequency_compose,
         },
         multiple=True,
     )
