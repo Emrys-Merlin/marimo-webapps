@@ -6,6 +6,7 @@ app = marimo.App(width="medium")
 with app.setup:
     import json
     from math import ceil, sqrt
+    from urllib.request import urlopen
 
     import marimo as mo
 
@@ -24,7 +25,7 @@ def _():
 
 @app.cell
 def _(lang_selector):
-    lang_selector
+    lang_selector  # pyright: ignore[reportUnusedExpression]
     return
 
 
@@ -38,8 +39,13 @@ def _():
 
 @app.cell
 def _(public_dir):
-    with open(public_dir / "rsa.json") as f:
-        lang_dicts = json.load(f)
+    try:
+        with open(public_dir / "rsa.json") as f:
+            lang_dicts = json.load(f)
+    except:  # noqa: E722
+        # Hack: In WASM case need to load via URL not on local file...
+        with urlopen(public_dir / "rsa.json") as f:
+            lang_dicts = json.load(f)
     return (lang_dicts,)
 
 

@@ -7,6 +7,7 @@ with app.setup:
     import json
     from collections import Counter
     from math import ceil
+    from urllib.request import urlopen
 
     import altair as alt
     import marimo as mo
@@ -41,15 +42,20 @@ def _():
 
 @app.cell
 def _(public_dir):
-    with open(public_dir / "substitution_cipher.json") as f:
-        lang_dicts = json.load(f)
+    try:
+        with open(public_dir / "substitution_cipher.json") as f:
+            lang_dicts = json.load(f)
+    except:  # noqa: E722
+        # Hack: In WASM case need to load via URL not on local file...
+        with urlopen(public_dir / "substitution_cipher.json") as f:
+            lang_dicts = json.load(f)
     return (lang_dicts,)
 
 
 @app.cell
 def _(lang_dicts, lang_selector):
     try:
-        lang_dict: dict[str, str] = lang_dicts[lang_selector.value]
+        lang_dict: dict[str, str] = lang_dicts[lang_selector.value]  # pyright: ignore[reportRedeclaration]
     except KeyError:
         lang_dict: dict[str, str] = lang_dicts["de"]
     return (lang_dict,)
@@ -101,13 +107,16 @@ def _():
 
 
 @app.cell
-def _(e_subst, n_alphabet):
+def _(n_alphabet):
     _fields: dict[str, mo.ui.text] = {}
 
     for _i in range(n_alphabet):
         _c = chr(ord("A") + _i)
         _fields[_c] = mo.ui.text(
-            max_length=1, label=f"{_c} =", value="E" if _c == e_subst else ""
+            max_length=1,
+            label=f"{_c} =",
+            # value="E" if _c == e_subst else "",  # Does not work for current English text
+            value="",
         )
 
     fields = mo.ui.dictionary(_fields)  # pyright: ignore[reportArgumentType]
@@ -172,8 +181,8 @@ def _(CHIFFRE, FREQUENCY_COL, LETTER_COL, n_alphabet):
 @app.cell
 def _(FREQUENCY_COL, LETTER_COL, chiffre_count):
     _idx = chiffre_count[FREQUENCY_COL].idxmax()
-    e_subst = chiffre_count.loc[_idx, LETTER_COL]
-    return (e_subst,)
+    e_subst = chiffre_count.loc[_idx, LETTER_COL]  # pyright: ignore[reportUnusedVariable]  # noqa: F841
+    return
 
 
 @app.cell
