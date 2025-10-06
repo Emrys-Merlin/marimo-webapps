@@ -5,6 +5,8 @@ app = marimo.App(width="medium")
 
 with app.setup:
     import json
+    from urllib.request import urlopen
+
     import marimo as mo
 
 
@@ -32,7 +34,7 @@ def _():
 
 @app.cell
 def _(lang_selector):
-    lang_selector
+    lang_selector  # pyright: ignore[reportUnusedExpression]
     return
 
 
@@ -46,18 +48,23 @@ def _():
 
 @app.cell
 def _(public_dir):
-    with open(public_dir / "dhkx.json") as f:
-        lang_dicts = json.load(f)
+    try:
+        with open(public_dir / "dhkx.json") as f:
+            lang_dicts = json.load(f)
+    except:  # noqa: E722
+        with urlopen(public_dir / "dhkx.json") as f:
+            lang_dicts = json.load(f)
     return (lang_dicts,)
 
 
 @app.cell
 def _(lang_dicts, lang_selector):
     try:
-        lang_dict: dict[str, str] = lang_dicts[lang_selector.value]
+        lang_dict: dict[str, str] = lang_dicts[lang_selector.value]  # pyright: ignore[reportRedeclaration]
     except KeyError:
-        lang_dict: dict[str, str] = lang_dict["de"]
-    return
+        # Hack: In WASM case need to load via URL not on local file...
+        lang_dict: dict[str, str] = lang_dicts["de"]
+    return (lang_dict,)
 
 
 @app.cell
@@ -76,18 +83,8 @@ def _():
 
 
 @app.cell
-def _(g_field, p_field):
-    mo.md(
-        f"""
-    # Diffie-Hellman Schlüsselaustausch
-
-    Diese App soll euch bei den Berechnungen zum Austausch eines Schlüssels nach Diffie-Hellman unterstützen. Tragt einfach die jeweiligen Werte in die Textfelder ein. Die App berechnet dann die Nachricht für euren Partner und das gemeinsame Geheimnis für euch.
-
-    ## Öffentliche Parameter
-    {g_field}</br>
-    {p_field}
-    """
-    )
+def _(g_field, lang_dict: dict[str, str], p_field):
+    mo.md(lang_dict["intro"].format(g_field=g_field, p_field=p_field))
     return
 
 
@@ -111,16 +108,11 @@ def _(SECRET):
 
 
 @app.cell
-def _(exchange_button, secret_field):
+def _(exchange_button, lang_dict: dict[str, str], secret_field):
     mo.md(
-        f"""
-    ## Geheimnis
-    {secret_field}
-
-    Das Geheimnis wird euch an der Station mitgeteilt.
-
-    {exchange_button}
-    """
+        lang_dict["secret"].format(
+            secret_field=secret_field, exchange_button=exchange_button
+        )
     )
     return
 
@@ -140,22 +132,21 @@ def _(RECEIVED_MESSAGE):
 
 
 @app.cell
-def _(exchange_button, message, received_message_field, secret_button):
+def _(
+    exchange_button,
+    lang_dict: dict[str, str],
+    message,
+    received_message_field,
+    secret_button,
+):
     mo.stop(not exchange_button.value and not secret_button.value)
 
     mo.md(
-        f"""
-    ## Nachricht für Partner
-
-    Die Nachricht für euren Partner lautet: **{message}**. Diese Nachricht kann über den unsicheren Kanal an euren Partner weitergegeben werden.
-
-    ## Geteiltes Geheimnis
-    Bitte tragt hier die Nachricht ein, die ihr von eurem Partner erhalten habt:
-
-    {received_message_field}
-
-    {secret_button}
-    """
+        lang_dict["exchange"].format(
+            message=message,
+            received_message_field=received_message_field,
+            secret_button=secret_button,
+        )
     )
     return
 
@@ -167,12 +158,10 @@ def _(p, received_message, secret):
 
 
 @app.cell
-def _(secret_button, shared_secret):
+def _(lang_dict: dict[str, str], secret_button, shared_secret):
     mo.stop(not secret_button.value)
 
-    mo.md(
-        f"""Euer geteiltes Geheimnis ist damit: **{shared_secret}**. Dieses geteilte Geheimnis kann nun als Schlüssel für weitere kryptographische Verfahren verwendet werden."""
-    )
+    mo.md(lang_dict["shared"].format(shared_secret=shared_secret))
     return
 
 
