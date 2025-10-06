@@ -4,6 +4,7 @@ __generated_with = "0.16.0"
 app = marimo.App(width="medium")
 
 with app.setup:
+    import json
     import marimo as mo
 
 
@@ -18,11 +19,44 @@ def _():
 
 @app.cell
 def _():
-    # lang_switch = mo.ui.dropdown(
-    #     label="Language",
-    #     options={"Deutsch/German": "de", "English": "en"},
-    #     value="Deutsch/German",
-    # )
+    lang_selector = mo.ui.dropdown(
+        # label="Language",
+        options={
+            "Deutsch/German": "de",
+            "English": "en",
+        },
+        value="Deutsch/German",
+    )
+    return (lang_selector,)
+
+
+@app.cell
+def _(lang_selector):
+    lang_selector
+    return
+
+
+@app.cell
+def _():
+    _dir = mo.notebook_location()
+    assert _dir is not None
+    public_dir = _dir / "public"
+    return (public_dir,)
+
+
+@app.cell
+def _(public_dir):
+    with open(public_dir / "dhkx.json") as f:
+        lang_dicts = json.load(f)
+    return (lang_dicts,)
+
+
+@app.cell
+def _(lang_dicts, lang_selector):
+    try:
+        lang_dict: dict[str, str] = lang_dicts[lang_selector.value]
+    except KeyError:
+        lang_dict: dict[str, str] = lang_dict["de"]
     return
 
 

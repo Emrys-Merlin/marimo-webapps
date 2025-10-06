@@ -4,9 +4,9 @@ __generated_with = "0.16.0"
 app = marimo.App(width="medium")
 
 with app.setup:
+    import json
     from math import ceil, sqrt
 
-    import i18n
     import marimo as mo
 
 
@@ -24,7 +24,7 @@ def _():
 
 @app.cell
 def _(lang_selector):
-    lang_selector  # pyright: ignore[reportUnusedExpression]
+    lang_selector
     return
 
 
@@ -37,11 +37,19 @@ def _():
 
 
 @app.cell
-def _(lang_selector, public_dir):
-    i18n.load_path.append(public_dir)
-    i18n.set("locale", lang_selector.value)
-    i18n.set("fallback", "de")
-    return
+def _(public_dir):
+    with open(public_dir / "rsa.json") as f:
+        lang_dicts = json.load(f)
+    return (lang_dicts,)
+
+
+@app.cell
+def _(lang_dicts, lang_selector):
+    try:
+        lang_dict = lang_dicts[lang_selector.value]
+    except KeyError:
+        lang_dict = lang_dicts["de"]
+    return (lang_dict,)
 
 
 @app.cell
@@ -96,19 +104,18 @@ def _(C, E, N):
 
 
 @app.cell
-def _(lang_selector):
-    _ = lang_selector.value
+def _(lang_dict):
     button = mo.ui.button(
-        label=i18n.t("rsa.next"), value=False, on_click=lambda value: True
+        label=lang_dict["next"], value=False, on_click=lambda value: True
     )
     phi_button = mo.ui.button(
-        label=i18n.t("rsa.next"), value=False, on_click=lambda value: True
+        label=lang_dict["next"], value=False, on_click=lambda value: True
     )
     d_button = mo.ui.button(
-        label=i18n.t("rsa.next"), value=False, on_click=lambda value: True
+        label=lang_dict["next"], value=False, on_click=lambda value: True
     )
     c_button = mo.ui.button(
-        label=i18n.t("rsa.next"), value=False, on_click=lambda value: True
+        label=lang_dict["next"], value=False, on_click=lambda value: True
     )
     return button, c_button, d_button, phi_button
 
@@ -133,8 +140,8 @@ def _(C, E, N, c_input, e_input, n_input):
 
 
 @app.cell
-def _(button, e_input, n_input):
-    mo.md(i18n.t("rsa.title").format(n_input=n_input, e_input=e_input, button=button))
+def _(button, e_input, lang_dict, n_input):
+    mo.md(lang_dict["title"].format(n_input=n_input, e_input=e_input, button=button))
     return
 
 
@@ -159,8 +166,8 @@ def _(button, n):
 
 
 @app.cell
-def _(p, phi_button, q):
-    mo.md(i18n.t("rsa.prime_factors").format(p=p, q=q, phi_button=phi_button))
+def _(lang_dict, p, phi_button, q):
+    mo.md(lang_dict["prime_factors"].format(p=p, q=q, phi_button=phi_button))
     return
 
 
@@ -173,8 +180,8 @@ def _(p, phi_button, q):
 
 
 @app.cell
-def _(d_button, phi):
-    mo.md(i18n.t("rsa.phi_function").format(d_button=d_button, phi=phi))
+def _(d_button, lang_dict, phi):
+    mo.md(lang_dict["phi_function"].format(d_button=d_button, phi=phi))
     return
 
 
@@ -195,16 +202,16 @@ def _(d_button, e, phi):
 
 
 @app.cell
-def _(d):
-    mo.md(i18n.t("rsa.private_key").format(d=d))
+def _(d, lang_dict):
+    mo.md(lang_dict["private_key"].format(d=d))
     return
 
 
 @app.cell
-def _(c_button, c_input, d_button):
+def _(c_button, c_input, d_button, lang_dict):
     mo.stop(not d_button.value and not c_button.value)
 
-    mo.md(i18n.t("rsa.cipher").format(c_input=c_input, c_button=c_button))
+    mo.md(lang_dict["cipher"].format(c_input=c_input, c_button=c_button))
     return
 
 
@@ -215,10 +222,10 @@ def _(c, d, n):
 
 
 @app.cell
-def _(c_button, m):
+def _(c_button, lang_dict, m):
     mo.stop(not c_button.value)
 
-    mo.md(i18n.t("rsa.solution").format(m=m))
+    mo.md(lang_dict["solution"].format(m=m))
     return
 
 

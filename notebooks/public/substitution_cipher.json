@@ -1,0 +1,34 @@
+{
+    "de": {
+        "title": "# Substitutions-Chiffre\n\nBitte entschlüsselt den folgenden Text:",
+        "cipher": "EKGFMICEKR UMOKCNSORVCE. IEG EAQX JIK AOWUAQK UKMPKVX ORJ KOCE JKR EIRSKIV AOW JKR RAKCEVXKR PGX ZKGJIKRX. JIK VXAXIPR IVX IT \"QIXXK KIRWOKUKR\". ZIKM VDAVV ORJ KGWPMU!",
+        "link": "https://de.wikipedia.org/wiki/Buchstabenh%C3%A4ufigkeit",
+        "frequency_fn": "frequency_german.csv",
+        "additional_infos": "Macht euch dazu gerne die folgenden Informationen zu Nutze:",
+        "count_plot_intro": "Buchstabenhäufigkeit in der Chiffre",
+        "frequency_plot_intro": "Buchstabenhäufigkeit in deutschen Texten",
+        "letter_col": "Buchstabe",
+        "frequency_col": "Häufigkeit",
+        "frequency_plot_title": "Buchstabenhäufigkeit in deutschen Texten",
+        "count_plot_title": "Buchstabenhäufigkeit in der Chiffre",
+        "source": "Quelle",
+        "cipher_title": "Chiffre",
+        "message_title": "Klartext"
+    },
+    "en": {
+        "title": "# Substitution Cipher\n\nPlease decrypt the following text:",
+        "cipher": "FYIWQBVPNBVMYIJ. GYP JYNCTU VRT VBJH BIU TBQITU B RMIV BSYPV VRT ITLV NYFBVMYI. VRT JVBVMYI MJ MI \"ONTBJT MIJTQV\". RBCT DPI BIU TIKYG!",
+        "link": "https://en.wikipedia.org/wiki/Letter_frequency",
+        "frequency_fn": "frequency_english.csv",
+        "additional_infos": "Feel free to use the following information to help you:",
+        "count_plot_intro": "Letter frequency in the cipher",
+        "frequency_plot_intro": "Letter frequency in English texts",
+        "letter_col": "Letter",
+        "frequency_col": "Frequency",
+        "frequency_plot_title": "Letter frequency in English texts",
+        "count_plot_title": "Letter frequency in the cipher",
+        "source": "Source",
+        "cipher_title": "Cipher",
+        "message_title": "Message"
+    }
+}

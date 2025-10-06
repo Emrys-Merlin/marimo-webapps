@@ -4,13 +4,13 @@ __generated_with = "0.16.0"
 app = marimo.App(width="medium")
 
 with app.setup:
+    import json
     from collections import Counter
     from math import ceil
 
     import altair as alt
     import marimo as mo
     import pandas as pd
-    import i18n
 
 
 @app.cell
@@ -40,44 +40,50 @@ def _():
 
 
 @app.cell
-def _(lang_selector, public_dir):
-    i18n.load_path.append(public_dir)
-    i18n.set("locale", lang_selector.value)
-    i18n.set("fallback", "de")
-    return
+def _(public_dir):
+    with open(public_dir / "substitution_cipher.json") as f:
+        lang_dicts = json.load(f)
+    return (lang_dicts,)
 
 
 @app.cell
-def _(lang_selector):
-    _ = lang_selector.value
-    CHIFFRE = i18n.t("substitution_cipher.cipher")
-    LINK = i18n.t("substitution_cipher.link")
-    LETTER_COL = i18n.t("substitution_cipher.letter_col")
-    FREQUENCY_COL = i18n.t("substitution_cipher.frequency_col")
+def _(lang_dicts, lang_selector):
+    try:
+        lang_dict: dict[str, str] = lang_dicts[lang_selector.value]
+    except KeyError:
+        lang_dict: dict[str, str] = lang_dicts["de"]
+    return (lang_dict,)
+
+
+@app.cell
+def _(lang_dict: dict[str, str]):
+    CHIFFRE = lang_dict["cipher"]
+    LINK = lang_dict["link"]
+    LETTER_COL = lang_dict["letter_col"]
+    FREQUENCY_COL = lang_dict["frequency_col"]
     N_COLS = 2
     return CHIFFRE, FREQUENCY_COL, LETTER_COL, LINK, N_COLS
 
 
 @app.cell
-def _(lang_selector):
-    _ = lang_selector.value
-    mo.md(i18n.t("substitution_cipher.title"))
+def _(lang_dict: dict[str, str]):
+    mo.md(lang_dict["title"])
     return
 
 
 @app.cell
-def _(CHIFFRE, clear_text):
+def _(CHIFFRE, clear_text, lang_dict: dict[str, str]):
     clear_text_area = mo.ui.text_area(
         value=clear_text,
         disabled=True,
         full_width=True,
-        label="Klartext",
+        label=lang_dict["message_title"],
     ).style(width="50%")
     chiffre_text_area = mo.ui.text_area(
         value=CHIFFRE,
         disabled=False,
         full_width=True,
-        label="Chiffre",
+        label=lang_dict["cipher_title"],
     ).style(width="50%")
 
     mo.hstack(
@@ -171,7 +177,7 @@ def _(FREQUENCY_COL, LETTER_COL, chiffre_count):
 
 
 @app.cell
-def _(FREQUENCY_COL, LETTER_COL, chiffre_count):
+def _(FREQUENCY_COL, LETTER_COL, chiffre_count, lang_dict: dict[str, str]):
     _chart = (
         alt.Chart(chiffre_count)
         .mark_bar()
@@ -179,7 +185,7 @@ def _(FREQUENCY_COL, LETTER_COL, chiffre_count):
             x=LETTER_COL,
             y=alt.Y(FREQUENCY_COL, title=f"{FREQUENCY_COL} (absolut)"),
         )
-        .properties(title=i18n.t("substitution_cipher.count_plot_title"))
+        .properties(title=lang_dict["count_plot_title"])
     )
 
     chiffre_plot = mo.ui.altair_chart(_chart)
@@ -187,9 +193,8 @@ def _(FREQUENCY_COL, LETTER_COL, chiffre_count):
 
 
 @app.cell
-def _(lang_selector, public_dir):
-    _ = lang_selector.value
-    frequency_fn = public_dir / i18n.t("substitution_cipher.frequency_fn")
+def _(lang_dict: dict[str, str], public_dir):
+    frequency_fn = public_dir / lang_dict["frequency_fn"]
     return (frequency_fn,)
 
 
@@ -200,12 +205,12 @@ def _(frequency_fn):
 
 
 @app.cell
-def _(FREQUENCY_COL, LETTER_COL, df):
+def _(FREQUENCY_COL, LETTER_COL, df, lang_dict: dict[str, str]):
     _chart = (
         alt.Chart(df)
         .mark_bar()
         .encode(x=LETTER_COL, y=alt.Y(FREQUENCY_COL, title=f"{FREQUENCY_COL} [%]"))
-        .properties(title=i18n.t("substitution_cipher.frequency_plot_title"))
+        .properties(title=lang_dict["frequency_plot_title"])
     )
 
     frequency_plot = mo.ui.altair_chart(_chart)
@@ -213,8 +218,8 @@ def _(FREQUENCY_COL, LETTER_COL, df):
 
 
 @app.cell
-def _(LINK, frequency_plot):
-    _source = i18n.t("substitution_cipher.source")
+def _(LINK, frequency_plot, lang_dict: dict[str, str]):
+    _source = lang_dict["source"]
     frequency_compose = mo.md(f"""\
     {frequency_plot}
     {_source}: [Wikipedia]({LINK})
@@ -223,18 +228,17 @@ def _(LINK, frequency_plot):
 
 
 @app.cell
-def _(lang_selector):
-    _ = lang_selector.value
-    mo.md(i18n.t("substitution_cipher.additional_infos"))
+def _(lang_dict: dict[str, str]):
+    mo.md(lang_dict["additional_infos"])
     return
 
 
 @app.cell
-def _(chiffre_plot, frequency_compose):
+def _(chiffre_plot, frequency_compose, lang_dict: dict[str, str]):
     mo.accordion(
         {
-            i18n.t("substitution_cipher.count_plot_intro"): chiffre_plot,
-            i18n.t("substitution_cipher.frequency_plot_intro"): frequency_compose,
+            lang_dict["count_plot_intro"]: chiffre_plot,
+            lang_dict["frequency_plot_intro"]: frequency_compose,
         },
         multiple=True,
     )
