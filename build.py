@@ -28,7 +28,7 @@ def _export(
         "--mode",
         "run",
         "--no-show-code",
-        "--include-cloudflare",
+        # "--include-cloudflare",
     ]
 
     try:
