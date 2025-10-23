@@ -73,33 +73,6 @@ wheels = [
 ]
 
 [[package]]
-name = "crypto-scavenger-hunt"
-version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "altair" },
-    { name = "basedpyright" },
-    { name = "loguru" },
-    { name = "marimo" },
-    { name = "pandas" },
-    { name = "prek" },
-    { name = "ruff" },
-    { name = "typer" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "altair", specifier = ">=5.5.0" },
-    { name = "basedpyright", specifier = ">=1.31.4" },
-    { name = "loguru", specifier = ">=0.7.3" },
-    { name = "marimo", specifier = ">=0.16.5" },
-    { name = "pandas", specifier = ">=2.3.3" },
-    { name = "prek", specifier = ">=0.2.1" },
-    { name = "ruff", specifier = ">=0.13.1" },
-    { name = "typer", specifier = ">=0.19.2" },
-]
-
-[[package]]
 name = "docutils"
 version = "0.22.2"
 source = { registry = "https://pypi.org/simple" }
@@ -261,6 +234,33 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/67/6b/5e1fcdeebebf6cebfbbf7cd6eda3be1ee019e50c693d99f00e478c4f3f8c/marimo-0.16.5.tar.gz", hash = "sha256:8f5939d3c4e67ff25f6cfeefe731971ed7f3346c20098034b923a24a0d7770d6", size = 33882430 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/0d/a0/14bd2ae122db3c4c43c6ebf0c861196328156f61e6452c2cd67b730430b0/marimo-0.16.5-py3-none-any.whl", hash = "sha256:1f98c0ee0fed9337e26c895c662f92cc578cdd03502c194eac9ceeb434bf479b", size = 34400840 },
+]
+
+[[package]]
+name = "marimo-web-apps"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "altair" },
+    { name = "basedpyright" },
+    { name = "loguru" },
+    { name = "marimo" },
+    { name = "pandas" },
+    { name = "prek" },
+    { name = "ruff" },
+    { name = "typer" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "altair", specifier = ">=5.5.0" },
+    { name = "basedpyright", specifier = ">=1.31.4" },
+    { name = "loguru", specifier = ">=0.7.3" },
+    { name = "marimo", specifier = ">=0.16.5" },
+    { name = "pandas", specifier = ">=2.3.3" },
+    { name = "prek", specifier = ">=0.2.1" },
+    { name = "ruff", specifier = ">=0.13.1" },
+    { name = "typer", specifier = ">=0.19.2" },
 ]
 
 [[package]]

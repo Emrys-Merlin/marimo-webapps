@@ -1,8 +1,9 @@
 [project]
-name = "crypto-scavenger-hunt"
+name = "marimo-web-apps"
 version = "0.1.0"
-description = "Add your description here"
+description = "Collection of marimo-based web applications"
 readme = "README.md"
+license = "MIT"
 requires-python = ">=3.13"
 dependencies = [
     "altair>=5.5.0",
