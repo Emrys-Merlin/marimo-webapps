@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.16.0"
+__generated_with = "0.16.5"
 app = marimo.App(width="medium")
 
 with app.setup:
@@ -68,14 +68,14 @@ def _(lang_dicts, lang_selector):
 
 
 @app.cell
-def _():
+def _(lang_dict: dict[str, str]):
     exchange_button = mo.ui.button(
-        label="Austauschnachricht berechnen",
+        label=lang_dict["button_exchange"],
         value=False,
         on_click=lambda value: True,
     )
     secret_button = mo.ui.button(
-        label="Gemeinsames Geheimnis berechnen",
+        label=lang_dict["button_secret"],
         value=False,
         on_click=lambda value: True,
     )

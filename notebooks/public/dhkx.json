@@ -3,12 +3,16 @@
         "intro": "# Diffie-Hellman Schlüsselaustausch\n\nDiese App soll euch bei den Berechnungen zum Austausch eines Schlüssels nach Diffie-Hellman unterstützen. Tragt einfach die jeweiligen Werte in die Textfelder ein. Die App berechnet dann die Nachricht für euren Partner und das gemeinsame Geheimnis für euch.\n\n## Öffentliche Parameter\n{g_field}</br>{p_field}",
         "secret": "## Geheimnis\n{secret_field}\n\nDas Geheimnis wird euch an der Station mitgeteilt.\n\n{exchange_button}",
         "exchange": "## Nachricht für Partner\n\nDie Nachricht für euren Partner lautet: **{message}**. Diese Nachricht kann über den unsicheren Kanal an euren Partner weitergegeben werden.\n\n## Geteiltes Geheimnis\nBitte tragt hier die Nachricht ein, die ihr von eurem Partner erhalten habt:\n\n{received_message_field}\n\n{secret_button}",
-        "shared": "Euer geteiltes Geheimnis ist damit: **{shared_secret}**. Dieses geteilte Geheimnis kann nun als Schlüssel für weitere kryptographische Verfahren verwendet werden."
+        "shared": "Euer geteiltes Geheimnis ist damit: **{shared_secret}**. Dieses geteilte Geheimnis kann nun als Schlüssel für weitere kryptographische Verfahren verwendet werden.",
+        "button_exchange": "Austauschnachricht berechnen",
+        "button_secret": "Gemeinsames Geheimnis berechnen"
     },
     "en": {
         "intro": "# Diffie-Hellman Key Exchange\n\nThis app should help you with the calculations for exchanging a key using Diffie-Hellman. Simply enter the respective values in the text fields. The app will then calculate the message for your partner and the shared secret for you.\n\n## Public Parameters\n{g_field}</br>{p_field}",
         "secret": "## Secret\n{secret_field}\n\nThe secret will be communicated to you at the station.\n\n{exchange_button}",
         "exchange": "## Message for Partner\n\nThe message for your partner is: **{message}**. This message can be passed to your partner over the insecure channel.\n\n## Shared Secret\nPlease enter the message you received from your partner here:\n\n{received_message_field}\n\n{secret_button}",
-        "shared": "Your shared secret is therefore: **{shared_secret}**. This shared secret can now be used as a key for further cryptographic procedures."
+        "shared": "Your shared secret is therefore: **{shared_secret}**. This shared secret can now be used as a key for further cryptographic procedures.",
+        "button_exchange": "Compute exchange message",
+        "button_secret": "Compute shared secret"
     }
 }

@@ -28,7 +28,7 @@ def _():
 
 @app.cell
 def _(lang_selector):
-    lang_selector
+    lang_selector  # pyright: ignore[reportUnusedExpression]
     return
 
 
